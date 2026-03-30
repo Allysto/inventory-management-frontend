@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tab-btn {
+            padding: 12px 24px;
+            background: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .tab-btn.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        /* Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card h3 {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        /* Tables */
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .card h2 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        /* Forms */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        button:hover {
+            background: #5a67d8;
+        }
+        
+        .btn-danger {
+            background: #e53e3e;
+        }
+        
+        .btn-danger:hover {
+            background: #c53030;
+        }
+        
+        .btn-success {
+            background: #48bb78;
+        }
+        
+        .btn-success:hover {
+            background: #38a169;
+        }
+        
+        .alert {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .badge-success {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .badge-danger {
+            background: #fed7d7;
+            color: #c53030;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📦 Inventory Management System</h1>
+            <p>Track your products, manage stock, and monitor inventory value</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('dashboard')">📊 Dashboard</button>
+            <button class="tab-btn" onclick="switchTab('products')">🛍️ Products</button>
+            <button class="tab-btn" onclick="switchTab('transactions')">📝 Transactions</button>
+        </div>
+        
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <h3>Total Products</h3>
+                    <div class="value" id="totalProducts">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Inventory Value</h3>
+                    <div class="value" id="totalValue">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Low Stock Items</h3>
+                    <div class="value" id="lowStockCount">-</div>
+                </div>
+            </div>
+            
+            <div id="lowStockAlert"></div>
+            
+            <div class="card">
+                <h2>Recent Transactions</h2>
+                <table id="recentTransactions">
+                    <thead>
+                        <tr><th>ID</th><th>Product</th><th>Type</th><th>Quantity</th><th>Date</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="5" style="text-align:center">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="card">
+                <h2>Product List</h2>
+                <table id="productList">
+                    <thead>
+                        <tr><th>SKU</th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="5" style="text-align:center">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Products Tab -->
+        <div id="products" class="tab-content">
+            <div class="card">
+                <h2>Add New Product</h2>
+                <form id="productForm">
+                    <div class="form-group">
+                        <label>SKU *</label>
+                        <input type="text" id="sku" required placeholder="e.g., PROD001">
+                    </div>
+                    <div class="form-group">
+                        <label>Product Name *</label>
+                        <input type="text" id="name" required placeholder="e.g., Gaming Laptop">
+                    </div>
+                    <div class="form-group">
+                        <label>Category *</label>
+                        <input type="text" id="category" required placeholder="e.g., Electronics">
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <input type="text" id="description" placeholder="Product description">
+                    </div>
+                    <div class="form-group">
+                        <label>Price *</label>
+                        <input type="number" id="price" required step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>Initial Stock</label>
+                        <input type="number" id="stock" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Reorder Level</label>
+                        <input type="number" id="reorder_level" value="10">
+                    </div>
+                    <button type="submit">➕ Add Product</button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h2>All Products</h2>
+                <table id="allProductsTable">
+                    <thead>
+                        <tr><th>ID</th><th>SKU</th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="7" style="text-align:center">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Transactions Tab -->
+        <div id="transactions" class="tab-content">
+            <div class="card">
+                <h2>Record Transaction</h2>
+                <form id="transactionForm">
+                    <div class="form-group">
+                        <label>Product ID *</label>
+                        <input type="number" id="trans_product_id" required placeholder="Enter product ID">
+                    </div>
+                    <div class="form-group">
+                        <label>Transaction Type *</label>
+                        <select id="trans_type" required>
+                            <option value="IN">📥 Stock IN (Add Stock)</option>
+                            <option value="OUT">📤 Stock OUT (Remove Stock)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Quantity *</label>
+                        <input type="number" id="trans_quantity" required placeholder="Quantity">
+                    </div>
+                    <div class="form-group">
+                        <label>Unit Price *</label>
+                        <input type="number" id="trans_price" required step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <input type="text" id="trans_notes" placeholder="Optional notes">
+                    </div>
+                    <button type="submit">📝 Record Transaction</button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h2>Transaction History</h2>
+                <table id="transactionHistory">
+                    <thead>
+                        <tr><th>ID</th><th>Product ID</th><th>Type</th><th>Quantity</th><th>Price</th><th>Date</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="6" style="text-align:center">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://localhost:8000/api';
+        
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Refresh data when switching tabs
+            if (tabName === 'dashboard') loadDashboard();
+            if (tabName === 'products') loadAllProducts();
+            if (tabName === 'transactions') loadTransactions();
+        }
+        
+        // Load Dashboard
+        async function loadDashboard() {
+            try {
+                const response = await fetch(`${API_URL}/analytics/summary`);
+                const data = await response.json();
+                
+                document.getElementById('totalProducts').innerHTML = data.total_products;
+                document.getElementById('totalValue').innerHTML = `$${data.total_inventory_value.toFixed(2)}`;
+                document.getElementById('lowStockCount').innerHTML = data.low_stock_count;
+                
+                // Low stock alert
+                if (data.low_stock_items && data.low_stock_items.length > 0) {
+                    let alertHtml = '<div class="alert">⚠️ Low Stock Alerts:<br>';
+                    data.low_stock_items.forEach(item => {
+                        alertHtml += `&nbsp;&nbsp;• ${item.product_name}: Only ${item.current_stock} left (Reorder at ${item.reorder_level})<br>`;
+                    });
+                    alertHtml += '</div>';
+                    document.getElementById('lowStockAlert').innerHTML = alertHtml;
+                } else {
+                    document.getElementById('lowStockAlert').innerHTML = '';
+                }
+                
+                // Recent transactions
+                const transactionsTable = document.querySelector('#recentTransactions tbody');
+                if (data.recent_transactions && data.recent_transactions.length > 0) {
+                    transactionsTable.innerHTML = data.recent_transactions.map(t => `
+                        <tr>
+                            <td>${t.id}</td>
+                            <td>${t.product_id}</td>
+                            <td><span class="badge ${t.type === 'IN' ? 'badge-success' : 'badge-danger'}">${t.type === 'IN' ? 'Stock IN' : 'Stock OUT'}</span></td>
+                            <td>${t.quantity}</td>
+                            <td>${new Date(t.date).toLocaleString()}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    transactionsTable.innerHTML = '<tr><td colspan="5" style="text-align:center">No transactions yet</td></tr>';
+                }
+                
+                // Product list
+                const productsResponse = await fetch(`${API_URL}/products`);
+                const products = await productsResponse.json();
+                const productTable = document.querySelector('#productList tbody');
+                if (products.length > 0) {
+                    productTable.innerHTML = products.map(p => `
+                        <tr>
+                            <td>${p.sku}</td>
+                            <td>${p.name}</td>
+                            <td>${p.category}</td>
+                            <td>$${p.price}</td>
+                            <td><span class="badge ${p.stock <= p.reorder_level ? 'badge-danger' : 'badge-success'}">${p.stock}</span></td>
+                        </tr>
+                    `).join('');
+                } else {
+                    productTable.innerHTML = '<tr><td colspan="5" style="text-align:center">No products yet. Add your first product!</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                document.getElementById('totalProducts').innerHTML = 'Error';
+                document.getElementById('totalValue').innerHTML = 'Error';
+                document.getElementById('lowStockCount').innerHTML = 'Error';
+            }
+        }
+        
+        // Load all products for Products tab
+        async function loadAllProducts() {
+            try {
+                const response = await fetch(`${API_URL}/products`);
+                const products = await response.json();
+                const table = document.querySelector('#allProductsTable tbody');
+                if (products.length > 0) {
+                    table.innerHTML = products.map(p => `
+                        <tr>
+                            <td>${p.id}</td>
+                            <td>${p.sku}</td>
+                            <td>${p.name}</td>
+                            <td>${p.category}</td>
+                            <td>$${p.price}</td>
+                            <td>${p.stock}</td>
+                            <td><button class="btn-danger" onclick="deleteProduct(${p.id})">Delete</button></td>
+                        </tr>
+                    `).join('');
+                } else {
+                    table.innerHTML = '<tr><td colspan="7" style="text-align:center">No products yet. Add your first product!</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error loading products:', error);
+            }
+        }
+        
+        // Load transactions
+        async function loadTransactions() {
+            try {
+                const response = await fetch(`${API_URL}/transactions`);
+                const transactions = await response.json();
+                const table = document.querySelector('#transactionHistory tbody');
+                if (transactions.length > 0) {
+                    table.innerHTML = transactions.map(t => `
+                        <tr>
+                            <td>${t.id}</td>
+                            <td>${t.product_id}</td>
+                            <td><span class="badge ${t.transaction_type === 'IN' ? 'badge-success' : 'badge-danger'}">${t.transaction_type === 'IN' ? 'Stock IN' : 'Stock OUT'}</span></td>
+                            <td>${t.quantity}</td>
+                            <td>$${t.unit_price}</td>
+                            <td>${new Date(t.transaction_date).toLocaleString()}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    table.innerHTML = '<tr><td colspan="6" style="text-align:center">No transactions yet</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+            }
+        }
+        
+        // Create product
+        document.getElementById('productForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const product = {
+                sku: document.getElementById('sku').value,
+                name: document.getElementById('name').value,
+                category: document.getElementById('category').value,
+                description: document.getElementById('description').value || null,
+                price: parseFloat(document.getElementById('price').value),
+                stock: parseInt(document.getElementById('stock').value) || 0,
+                reorder_level: parseInt(document.getElementById('reorder_level').value) || 10
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/products`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(product)
+                });
+                if (response.ok) {
+                    alert('✅ Product created successfully!');
+                    document.getElementById('productForm').reset();
+                    loadAllProducts();
+                    loadDashboard();
+                } else {
+                    const error = await response.json();
+                    alert('❌ Error: ' + error.detail);
+                }
+            } catch (error) {
+                alert('❌ Error creating product: ' + error.message);
+            }
+        });
+        
+        // Create transaction
+        document.getElementById('transactionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const transaction = {
+                product_id: parseInt(document.getElementById('trans_product_id').value),
+                transaction_type: document.getElementById('trans_type').value,
+                quantity: parseInt(document.getElementById('trans_quantity').value),
+                unit_price: parseFloat(document.getElementById('trans_price').value),
+                notes: document.getElementById('trans_notes').value || null
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/transactions`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(transaction)
+                });
+                if (response.ok) {
+                    const result = await response.json();
+                    alert(`✅ Transaction recorded! New stock: ${result.new_stock}`);
+                    document.getElementById('transactionForm').reset();
+                    loadTransactions();
+                    loadDashboard();
+                } else {
+                    const error = await response.json();
+                    alert('❌ Error: ' + error.detail);
+                }
+            } catch (error) {
+                alert('❌ Error recording transaction: ' + error.message);
+            }
+        });
+        
+        // Delete product
+        window.deleteProduct = async (id) => {
+            if (confirm('Are you sure you want to delete this product?')) {
+                try {
+                    const response = await fetch(`${API_URL}/products/${id}`, {
+                        method: 'DELETE'
+                    });
+                    if (response.ok) {
+                        alert('✅ Product deleted successfully!');
+                        loadAllProducts();
+                        loadDashboard();
+                    } else {
+                        alert('❌ Error deleting product');
+                    }
+                } catch (error) {
+                    alert('❌ Error: ' + error.message);
+                }
+            }
+        };
+        
+        // Initial load
+        loadDashboard();
+    </script>
+</body>
+</html>
