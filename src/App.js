@@ -15,7 +15,7 @@ import {
 const { Header, Content, Sider } = Layout;
 
 // API Configuration
-const API_URL = 'http://localhost:8000/api';
+const API_URL = 'https://inventory-management-backend-2-2h44.onrender.com/api';
 
 // Dashboard Component
 const Dashboard = () => {
