@@ -1,2 +1,15 @@
-{"rewrites":[{"source":"/(.*)","destination":"/simple_frontend.html"}]}
-
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "simple_frontend.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/simple_frontend.html"
+    }
+  ]
+}
