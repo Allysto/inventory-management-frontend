@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventory Management System</title>
+    <title>Inventory Management System - South Africa</title>
     <style>
         * {
             margin: 0;
@@ -221,12 +221,17 @@
         .tab-content.active {
             display: block;
         }
+        
+        .currency {
+            font-weight: bold;
+            color: #2c7a4d;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>📦 Inventory Management System</h1>
+            <h1>📦 Inventory Management System - South Africa</h1>
             <p>Track your products, manage stock, and monitor inventory value</p>
         </div>
         
@@ -244,7 +249,7 @@
                     <div class="value" id="totalProducts">-</div>
                 </div>
                 <div class="stat-card">
-                    <h3>Inventory Value</h3>
+                    <h3>Inventory Value (R)</h3>
                     <div class="value" id="totalValue">-</div>
                 </div>
                 <div class="stat-card">
@@ -271,7 +276,7 @@
                 <h2>Product List</h2>
                 <table id="productList">
                     <thead>
-                        <tr><th>SKU</th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th></tr>
+                        <tr><th>SKU</th><th>Name</th><th>Category</th><th>Price (R)</th><th>Stock</th></tr>
                     </thead>
                     <tbody>
                         <tr><td colspan="5" style="text-align:center">Loading...</td></tr>
@@ -302,7 +307,7 @@
                         <input type="text" id="description" placeholder="Product description">
                     </div>
                     <div class="form-group">
-                        <label>Price *</label>
+                        <label>Price (R) *</label>
                         <input type="number" id="price" required step="0.01" placeholder="0.00">
                     </div>
                     <div class="form-group">
@@ -321,7 +326,7 @@
                 <h2>All Products</h2>
                 <table id="allProductsTable">
                     <thead>
-                        <tr><th>ID</th><th>SKU</th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th></tr>
+                        <tr><th>ID</th><th>SKU</th><th>Name</th><th>Category</th><th>Price (R)</th><th>Stock</th><th>Actions</th></tr>
                     </thead>
                     <tbody>
                         <tr><td colspan="7" style="text-align:center">Loading...</td></tr>
@@ -351,7 +356,7 @@
                         <input type="number" id="trans_quantity" required placeholder="Quantity">
                     </div>
                     <div class="form-group">
-                        <label>Unit Price *</label>
+                        <label>Unit Price (R) *</label>
                         <input type="number" id="trans_price" required step="0.01" placeholder="0.00">
                     </div>
                     <div class="form-group">
@@ -366,7 +371,7 @@
                 <h2>Transaction History</h2>
                 <table id="transactionHistory">
                     <thead>
-                        <tr><th>ID</th><th>Product ID</th><th>Type</th><th>Quantity</th><th>Price</th><th>Date</th></tr>
+                        <tr><th>ID</th><th>Product ID</th><th>Type</th><th>Quantity</th><th>Price (R)</th><th>Date</th></tr>
                     </thead>
                     <tbody>
                         <tr><td colspan="6" style="text-align:center">Loading...</td></tr>
@@ -377,7 +382,7 @@
     </div>
     
     <script>
-        const API_URL = 'http://localhost:8000/api';
+        const API_URL = 'https://inventory-management-backend-2-2h44.onrender.com/api';
         
         // Tab switching
         function switchTab(tabName) {
@@ -404,7 +409,7 @@
                 const data = await response.json();
                 
                 document.getElementById('totalProducts').innerHTML = data.total_products;
-                document.getElementById('totalValue').innerHTML = `$${data.total_inventory_value.toFixed(2)}`;
+                document.getElementById('totalValue').innerHTML = `R${data.total_inventory_value.toFixed(2)}`;
                 document.getElementById('lowStockCount').innerHTML = data.low_stock_count;
                 
                 // Low stock alert
@@ -445,7 +450,7 @@
                             <td>${p.sku}</td>
                             <td>${p.name}</td>
                             <td>${p.category}</td>
-                            <td>$${p.price}</td>
+                            <td>R${p.price}</td>
                             <td><span class="badge ${p.stock <= p.reorder_level ? 'badge-danger' : 'badge-success'}">${p.stock}</span></td>
                         </tr>
                     `).join('');
@@ -473,7 +478,7 @@
                             <td>${p.sku}</td>
                             <td>${p.name}</td>
                             <td>${p.category}</td>
-                            <td>$${p.price}</td>
+                            <td>R${p.price}</td>
                             <td>${p.stock}</td>
                             <td><button class="btn-danger" onclick="deleteProduct(${p.id})">Delete</button></td>
                         </tr>
@@ -499,7 +504,7 @@
                             <td>${t.product_id}</td>
                             <td><span class="badge ${t.transaction_type === 'IN' ? 'badge-success' : 'badge-danger'}">${t.transaction_type === 'IN' ? 'Stock IN' : 'Stock OUT'}</span></td>
                             <td>${t.quantity}</td>
-                            <td>$${t.unit_price}</td>
+                            <td>R${t.unit_price}</td>
                             <td>${new Date(t.transaction_date).toLocaleString()}</td>
                         </tr>
                     `).join('');
